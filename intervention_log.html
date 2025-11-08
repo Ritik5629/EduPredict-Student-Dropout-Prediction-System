@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict: Intervention Log</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .log-list { margin-top: 1.5rem; }
+        .log-item { background: var(--bg-dark-secondary); padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem; border-left: 5px solid var(--danger); transition: all 0.3s; }
+        .log-item:hover { transform: translateX(5px); background: rgba(4, 42, 66, 0.9); }
+        .log-item.complete { border-left-color: var(--success); }
+        .log-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .log-action { font-weight: 600; color: var(--text-primary); }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+    <nav><div class="nav-container"><div class="logo"><span>🎓</span><span>EduPredict</span></div><ul class="nav-links">
+        <li><a href="dashboard.html">Dashboard</a></li><li><a href="predict.html">Predict Student</a></li><li><a href="history.html">History</a></li>
+        <li id="auth-nav" style="display: none;"><button class="btn btn-outline" id="login-link">Login</button><button class="btn btn-accent" id="register-link">Sign Up</button></li>
+        <li id="logout-nav" style="display: none;"><span id="user-name-display" class="nav-user-name"></span><button class="btn btn-outline" id="logout-btn">Logout</button></li>
+    </ul></div></nav>
+
+    <main id="log-page" class="dashboard active">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">High-Risk Intervention Log</h1>
+            <p class="dashboard-subtitle">Track and record follow-up actions for students predicted as Medium or High Risk.</p>
+        </div>
+        
+        <div class="stat-group-card">
+            <h2 class="stat-group-title">Active Interventions (5/15 High Risk Students)</h2>
+            <div class="log-list">
+                <div class="log-item">
+                    <div class="log-meta"><span>Student ID: S1001</span> <span>Risk: HIGH</span> <span>Date: 2025-10-20</span></div>
+                    <div class="log-action">Action: Financial Aid Review Scheduled.</div>
+                </div>
+                <div class="log-item complete">
+                    <div class="log-meta"><span>Student ID: S1005</span> <span>Risk: MEDIUM</span> <span>Date: 2025-10-15</span></div>
+                    <div class="log-action">Action: Academic Counseling Complete. Next Follow-up: 11/15.</div>
+                </div>
+                <div class="log-item">
+                    <div class="log-meta"><span>Student ID: S1012</span> <span>Risk: HIGH</span> <span>Date: 2025-10-23</span></div>
+                    <div class="log-action">Action: Urgent Outreach Required (Unresponsive).</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Add New Log Entry</button>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

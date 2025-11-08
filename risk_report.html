@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict: Student Risk Report</title>
+    <!-- Embedding internal CSS for advanced, print-ready document styling -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+        /* --- COLOR PALETTE (Screen Only) --- */
+        :root {
+            --primary: #00bcd4; 
+            --primary-dark: #0097a7;
+            --primary-light: #4ff6ff;
+            --accent: #ffb300; 
+            --success: #10b981; 
+            --warning: #f59e0b; 
+            --danger: #ef4444;  
+            --bg-dark: #011627; 
+            --bg-dark-secondary: #042a42; 
+            --text-primary: #f0f8ff; 
+            --text-secondary: #a0c4e4; 
+        }
+        
+        /* --- BASE STYLES (Screen) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* --- NAVIGATION (Minimal styling, relies heavily on external style.css if present) --- */
+        nav { 
+            position: sticky; top: 0; z-index: 1000; background: rgba(1, 22, 39, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); 
+            border-bottom: 1px solid var(--primary);
+        }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-links { display: none; } /* Hide complex nav on this page */
+
+        /* --- MAIN REPORT CONTAINER --- */
+        .dashboard { padding: 4rem 2rem; }
+        .report-card { 
+            background: var(--bg-dark-secondary); 
+            color: var(--text-primary); 
+            padding: 3rem; 
+            border-radius: 15px; 
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        /* --- REPORT SECTIONS --- */
+        .report-header { border-bottom: 2px solid var(--primary-dark); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .report-header h2 { 
+            color: var(--primary-light); 
+            font-size: 2rem; 
+            font-weight: 800;
+        }
+        .report-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+        .risk-summary { 
+            padding: 1.5rem; 
+            border-radius: 8px; 
+            margin: 2rem 0; 
+            font-weight: 700; 
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-left: 5px solid;
+        }
+        .risk-summary.high { 
+            background: rgba(239, 68, 68, 0.15); 
+            color: var(--danger); 
+            border-left-color: var(--danger);
+        }
+        .risk-summary.medium { 
+            background: rgba(245, 158, 11, 0.15); 
+            color: var(--warning); 
+            border-left-color: var(--warning);
+        }
+        .risk-summary.low { 
+            background: rgba(16, 185, 129, 0.15); 
+            color: var(--success); 
+            border-left-color: var(--success);
+        }
+        
+        .summary-label { font-size: 1.1rem; }
+        .summary-metric { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .report-section h3 { 
+            color: var(--primary); 
+            margin-top: 2rem; 
+            border-bottom: 1px dotted var(--border-color); 
+            padding-bottom: 0.5rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        .report-section ul { list-style: disc; padding-left: 20px; margin-top: 1rem; }
+        .factor-list li { margin-bottom: 0.7rem; color: var(--text-secondary); }
+        .factor-list li strong { color: var(--text-primary); }
+        
+        .print-button { margin-top: 3rem; text-align: center; }
+
+        /* --- PRINT STYLES (Converts to White/Black for PDF/Paper) --- */
+        @media print {
+            body { 
+                background: white; 
+                color: #000; 
+                margin: 0; 
+                padding: 0;
+            }
+            nav, .orb, .print-button { 
+                display: none !important; /* Hide background elements and print button */
+            }
+            .report-card {
+                background: white;
+                color: #000;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                max-width: none;
+            }
+            .report-header { border-bottom-color: #333; }
+            .report-header h2 { color: #333; }
+            .report-header p { color: #555; }
+            .risk-summary { 
+                background: #f0f0f0; /* Light gray background for contrast sections */
+                color: #333; 
+                border-left-color: #333 !important;
+            }
+            .report-section h3 { 
+                color: #333;
+                border-bottom-color: #ccc;
+            }
+            .factor-list li { color: #555; }
+            .factor-list li strong { color: #000; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+    <nav>
+        <div class="nav-container">
+            <div class="logo"><span>🎓</span><span>EduPredict</span></div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="predict.html">Predict Student</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="report-page" class="dashboard">
+        <div class="report-card">
+            <div class="report-header">
+                <h2>Comprehensive Student Risk Report</h2>
+                <p>Report ID: <span id="report-id">RPT-20251024-001</span></p>
+                <p>Report Generated: <span id="report-date">October 24, 2025</span></p>
+                <p>Student ID: <strong id="student-id">S1012</strong> | Enrollment Term: <span id="enrollment-term">2024/2025</span></p>
+            </div>
+
+            <!-- Risk Summary Section -->
+            <div class="risk-summary high" id="risk-summary-box">
+                <div class="summary-label">RISK LEVEL: <span id="risk-level-display">HIGH DROPOUT RISK</span></div>
+                <div class="summary-metric">Confidence: <span id="confidence-display">92%</span> | Risk Score: <span id="score-display">8/10</span></div>
+            </div>
+            
+            <!-- Key Risk Factors Section -->
+            <div class="report-section">
+                <h3>Key Risk Factors & Model Contribution</h3>
+                <ul class="factor-list" id="factor-list">
+                    <li>Financial Strain: **Unpaid tuition fees** (High Contribution)</li>
+                    <li>Academic Alert: **Very low average grade (9.55)** (High Contribution)</li>
+                    <li>Demographic: **Mature student (Age 28)** with significant external responsibilities (Medium Contribution)</li>
+                    <li>Admission: Low initial admission score (**125.00**) (Low Contribution)</li>
+                </ul>
+            </div>
+
+            <!-- Actionable Recommendations Section -->
+            <div class="report-section">
+                <h3>Actionable Recommendations</h3>
+                <ul class="factor-list" id="recommendation-list">
+                    <li style="color: var(--danger);">🚨 **IMMEDIATE ACTION:** Schedule urgent counseling session (within 48 hours).</li>
+                    <li style="color: var(--primary-light);">Priority: Review financial aid eligibility and offer payment plan options.</li>
+                    <li style="color: var(--primary-light);">Priority: Enroll student in mandatory academic tutoring program (Math/Science focus).</li>
+                    <li style="color: var(--primary-light);">Suggest connecting with non-traditional student support services.</li>
+                </ul>
+            </div>
+
+            <div class="print-button">
+                <button class="btn" style="background: var(--primary); color: white; padding: 1rem 2rem; font-size: 1.1rem;" onclick="window.print()">Print/Export PDF Report</button>
+            </div>
+        </div>
+    </main>
+    
+    <div class="toast" id="toast">
+        <span id="toast-icon"></span>
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- NOTE: Requires script.js functions (like loadHistoryData, getCurrentUser, showToast) or a simplified version here -->
+    <script src="script.js"></script>
+</body>
+</html>

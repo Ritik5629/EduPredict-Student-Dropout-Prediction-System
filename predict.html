@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict: Dropout Probability Prediction</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .prediction-card {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: rgba(4, 42, 66, 0.95);
+            border: 2px solid #0277BD;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+            padding: 3.5rem 5rem;
+            border-radius: 20px;
+            animation: fadeInScale 0.5s ease-out;
+        }
+
+        .form-input, .form-select {
+            background: rgba(1, 22, 39, 0.8) !important;
+            border: 1px solid rgba(0, 188, 212, 0.2);
+            transition: all 0.2s ease-in-out;
+            color: #FFFFFF;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #00BCD4 !important;
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
+            background: rgba(0, 188, 212, 0.1) !important;
+            outline: none;
+        }
+        
+        .form-label {
+            color: #00BCD4;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-card {
+            padding: 3rem;
+            margin-top: 3rem !important;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+            text-align: left !important;
+            border: 3px solid;
+            animation: fadeInScale 0.8s ease-out;
+            display: none;
+        }
+        
+        .result-text {
+            text-align: center !important;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .result-card.danger {
+            border-color: #EF4444 !important;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(1, 22, 39, 0.9));
+        }
+        .result-card.success {
+            border-color: #10B981 !important;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(1, 22, 39, 0.9));
+        }
+        .result-card.warning-card {
+            border-color: #FFB300 !important;
+            background: linear-gradient(135deg, rgba(255, 179, 0, 0.1), rgba(1, 22, 39, 0.9));
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00BCD4, #0277BD);
+            border: none;
+            color: white;
+            padding: 1.25rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4DD0E1, #00BCD4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 188, 212, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .model-info {
+            background: rgba(0, 188, 212, 0.1);
+            border-left: 4px solid #00BCD4;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            color: #FFFFFF;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10B981;
+            padding: 1rem 1.5rem;
+            margin-top: 2rem;
+            border-radius: 8px;
+            color: #FFFFFF;
+            display: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10B981, #059669);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #34D399, #10B981);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .prediction-card {
+                padding: 2rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span>🎓</span>
+                <span>EduPredict</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="predict.html" class="active">Predict Student</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="prediction-page" class="dashboard active">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Student Dropout Probability Prediction</h1>
+            <p class="dashboard-subtitle">Advanced ML Regression Model - Predicts exact dropout probability (0-100%)</p>
+        </div>
+
+        <div class="prediction-card">
+            <div class="model-info">
+                <strong>🤖 Model Type:</strong> Random Forest Regressor<br>
+                <strong>📊 Output:</strong> Continuous probability score (0% to 100%)<br>
+                <strong>✨ Accuracy:</strong> Trained on real student data with optimized hyperparameters
+            </div>
+
+            <form id="prediction-form">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Average Grade (1st Semester)</label>
+                        <input type="number" class="form-input" id="avg_grade" 
+                               placeholder="0.00 to 20.00" step="0.01" min="0" max="20" required>
+                        <small style="color: #888; margin-top: 0.25rem;">Scale: 0-20 points</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Units Approved (1st Semester)</label>
+                        <input type="number" class="form-input" id="units_approved" 
+                               placeholder="0 to 6" min="0" max="6" required>
+                        <small style="color: #888; margin-top: 0.25rem;">Number of completed courses</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tuition Fees Status</label>
+                        <select class="form-select" id="tuition_status" required>
+                            <option value="">-- Select Status --</option>
+                            <option value="1">✅ Paid (Lower Risk)</option>
+                            <option value="0">❌ Unpaid (Higher Risk)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Scholarship Holder</label>
+                        <select class="form-select" id="scholarship" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="1">✅ Yes (Lower Risk)</option>
+                            <option value="0">❌ No (Higher Risk)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Age at Enrollment</label>
+                        <input type="number" class="form-input" id="age" 
+                               placeholder="18 to 50" min="18" max="50" required>
+                        <small style="color: #888; margin-top: 0.25rem;">Student's age when enrolled</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Marital Status</label>
+                        <select class="form-select" id="marital_status" required>
+                            <option value="">-- Select Status --</option>
+                            <option value="1">Single</option>
+                            <option value="2">Married</option>
+                            <option value="3">Divorced</option>
+                            <option value="4">Widowed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Admission Grade</label>
+                        <input type="number" class="form-input" id="admission_grade" 
+                               placeholder="100.0 to 200.0" step="0.1" min="100" max="200" required>
+                        <small style="color: #888; margin-top: 0.25rem;">Entry examination score</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">International Student</label>
+                        <select class="form-select" id="international" required>
+                            <option value="">-- Select Option --</option>
+                            <option value="0">No (Local Student)</option>
+                            <option value="1">Yes (International)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="gender" required>
+                            <option value="">-- Select Gender --</option>
+                            <option value="1">Female</option>
+                            <option value="0">Male</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GDP Per Capita (Country)</label>
+                        <input type="number" class="form-input" id="gdp" 
+                               placeholder="Default: 1053.06" step="0.01" value="1053.06" required>
+                        <small style="color: #888; margin-top: 0.25rem;">Economic indicator of origin country</small>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="predict-button">
+                    🔮 Calculate Dropout Probability with AI
+                </button>
+            </form>
+
+            <div class="result-card" id="prediction-result">
+                <h3 style="text-align: center; margin-bottom: 1rem; color: #00BCD4;">
+                    AI Prediction Result
+                </h3>
+                <p class="result-text" id="result-text"></p>
+                <div id="result-description"></div>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="history.html" class="btn-secondary">View Prediction History</a>
+                </div>
+            </div>
+
+            <div class="success-message" id="success-message">
+                <strong>✅ Success!</strong> Prediction has been saved to your history. You can view all your predictions in the <a href="history.html">History page</a>.
+            </div>
+        </div>
+    </main>
+    
+    <script src="prediction.js"></script>
+</body>
+</html>

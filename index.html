@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict: AI-Powered Student Success Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span>🎓</span>
+                <span>EduPredict</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+                <li id="auth-nav">
+                    <button class="btn btn-outline" id="login-link">Login</button>
+                    <button class="btn btn-accent" id="register-link">Sign Up</button>
+                </li>
+                <li id="logout-nav" style="display: none;">
+                    <span id="user-name-display" class="nav-user-name"></span>
+                    <button class="btn btn-outline" id="logout-btn">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="landing-page">
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <div class="hero-badge">✨ AI-Powered Education Analytics</div>
+                <h1>Predict Student Success with Machine Learning</h1>
+                <p>Leverage advanced AI algorithms to identify at-risk students early and provide timely interventions. Transform education outcomes with data-driven insights.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-accent" id="get-started-btn">Get Started Free</button>
+                    <button class="btn btn-outline" id="demo-btn">Watch Demo</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Three simple steps to predict student outcomes</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Input Student Data</h3>
+                    <p>Enter key academic and demographic information including grades, attendance, enrollment details, and financial status.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Analysis</h3>
+                    <p>Our machine learning model analyzes patterns from thousands of historical cases to assess dropout risk with high accuracy.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3>Actionable Insights</h3>
+                    <p>Receive instant risk assessments and recommendations to help educators provide targeted support when it matters most.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">94%</span>
+                    <div class="stat-label">Prediction Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">50K+</span>
+                    <div class="stat-label">Students Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">200+</span>
+                    <div class="stat-label">Institution Partners</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">32%</span>
+                    <div class="stat-label">Dropout Reduction</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" id="about">
+            <div class="about-content">
+                <h2 class="section-title">About EduPredict</h2>
+                <p class="section-subtitle">Transforming education through intelligent technology</p>
+                
+                <div class="about-grid">
+                    <div class="about-card">
+                        <span class="about-icon">🎯</span>
+                        <h3>Our Mission</h3>
+                        <p>To empower educational institutions with AI-driven insights that help every student reach their full potential and complete their education successfully.</p>
+                    </div>
+                    <div class="about-card">
+                        <span class="about-icon">👥</span>
+                        <h3>Our Team</h3>
+                        <p>We're a dedicated group of data scientists, educators, and engineers passionate about using technology to solve real educational challenges.</p>
+                    </div>
+                    <div class="about-card">
+                        <span class="about-icon">🔬</span>
+                        <h3>Our Technology</h3>
+                        <p>Built on cutting-edge machine learning algorithms trained on millions of data points to deliver accurate, actionable predictions.</p>
+                    </div>
+                    <div class="about-card">
+                        <span class="about-icon">🌟</span>
+                        <h3>Our Impact</h3>
+                        <p>Helping schools reduce dropout rates by up to 32% through early intervention and personalized student support programs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="logo">
+                    <span>🎓</span>
+                    <span>EduPredict</span>
+                </div>
+                <p>Empowering education through intelligent predictions and data-driven insights.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">API</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="mailto:info@edupredict.com">info@edupredict.com</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 EduPredict. All rights reserved. Built with ❤️ for education.</p>
+        </div>
+    </footer>
+
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Welcome Back</h2>
+                <button class="close-btn" data-modal="login-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email Address</label>
+                        <input type="email" class="form-input" id="login-email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Password</label>
+                        <input type="password" class="form-input" id="login-password" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                        Login to Dashboard
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                Don't have an account? <a href="#" id="switch-to-register">Sign up here</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="register-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Account</h2>
+                <button class="close-btn" data-modal="register-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="register-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="register-first-name">First Name</label>
+                            <input type="text" class="form-input" id="register-first-name" placeholder="John" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="register-last-name">Last Name</label>
+                            <input type="text" class="form-input" id="register-last-name" placeholder="Doe" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="register-email">Email Address</label>
+                        <input type="email" class="form-input" id="register-email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="register-role">Role</label>
+                        <select class="form-select" id="register-role" required>
+                            <option value="" disabled selected>Select your role</option>
+                            <option value="Admin">Administrator</option>
+                            <option value="Faculty">Teacher/Faculty</option>
+                            <option value="Researcher">Researcher</option>
+                            <option value="Counselor">Counselor</option>
+                            <option value="Student">Student</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="register-password">Password</label>
+                        <input type="password" class="form-input" id="register-password" placeholder="Minimum 6 characters" required>
+                    </div>
+                    <button type="submit" class="btn btn-accent" style="width: 100%; margin-top: 1rem;">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                Already have an account? <a href="#" id="switch-to-login">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span id="toast-icon"></span>
+        <span id="toast-message"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict: Timeline Forecast</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00bcd4;
+            --primary-dark: #0097a7;
+            --secondary: #4ff6ff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --dark: #0a1929;
+            --darker: #001e3c;
+            --light: #f0f8ff;
+            --lighter: #ffffff;
+            --card-bg: rgba(4, 42, 66, 0.9);
+            --border: rgba(0, 188, 212, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Orbs with Enhanced Animation */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 0;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 { 
+            width: 600px; 
+            height: 600px; 
+            background: linear-gradient(45deg, var(--primary), var(--secondary)); 
+            top: -250px; 
+            right: -250px;
+            animation-delay: 0s;
+            animation-duration: 25s;
+        }
+        
+        .orb-2 { 
+            width: 500px; 
+            height: 500px; 
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary)); 
+            bottom: -200px; 
+            left: -200px;
+            animation-delay: 5s;
+            animation-duration: 30s;
+        }
+        
+        .orb-3 { 
+            width: 300px; 
+            height: 300px; 
+            background: var(--secondary); 
+            top: 40%; 
+            left: 30%;
+            animation-delay: 10s;
+            animation-duration: 20s;
+        }
+
+        .orb-4 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(45deg, var(--warning), var(--danger));
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+            animation-duration: 22s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        /* Enhanced Navigation */
+        nav {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid var(--border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            letter-spacing: -0.5px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 0.3rem;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1800px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Enhanced Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: gradient 5s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .page-subtitle {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            font-weight: 400;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Enhanced Controls Section */
+        .controls-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .controls-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, rgba(0, 188, 212, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.8rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .student-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .student-card {
+            background: rgba(1, 22, 39, 0.8);
+            border: 2px solid rgba(0, 188, 212, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .student-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 188, 212, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 188, 212, 0.2);
+        }
+
+        .student-card:hover::after {
+            opacity: 1;
+        }
+
+        .student-card.active {
+            background: rgba(0, 188, 212, 0.15);
+            border-color: var(--primary);
+        }
+
+        .student-card.active::before {
+            transform: scaleX(1);
+        }
+
+        .student-id {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+
+        .student-risk {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+        }
+
+        .student-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .risk-high { color: var(--danger); }
+        .risk-medium { color: var(--warning); }
+        .risk-low { color: var(--success); }
+
+        .scenario-toggle {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .scenario-btn {
+            padding: 1rem 2rem;
+            background: rgba(1, 22, 39, 0.6);
+            border: 2px solid rgba(0, 188, 212, 0.3);
+            color: var(--light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .scenario-btn:hover::before {
+            left: 100%;
+        }
+
+        .scenario-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 188, 212, 0.2);
+        }
+
+        .scenario-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 188, 212, 0.4);
+        }
+
+        /* Enhanced Timeline Section */
+        .timeline-container {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 70%, rgba(0, 188, 212, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 450px;
+            margin-bottom: 2.5rem;
+        }
+
+        /* Enhanced Forecast Cards */
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .forecast-card {
+            background: rgba(1, 22, 39, 0.6);
+            border: 2px solid rgba(0, 188, 212, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .forecast-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 188, 212, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .forecast-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .forecast-card:hover::before {
+            opacity: 1;
+        }
+
+        .forecast-card:hover::after {
+            transform: scaleX(1);
+        }
+
+        .forecast-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 188, 212, 0.2);
+        }
+
+        .forecast-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .forecast-period {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .forecast-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+            line-height: 1;
+        }
+
+        .forecast-change {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .change-positive {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .change-negative {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Enhanced Milestones */
+        .milestones {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.8rem;
+            margin-top: 2.5rem;
+        }
+
+        .milestone-card {
+            background: rgba(1, 22, 39, 0.6);
+            border-left: 5px solid;
+            padding: 1.8rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .milestone-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .milestone-card.warning::before { 
+            background: radial-gradient(circle at center, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+        }
+        .milestone-card.danger::before { 
+            background: radial-gradient(circle at center, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+        }
+        .milestone-card.success::before { 
+            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+        }
+
+        .milestone-card:hover::before {
+            opacity: 1;
+        }
+
+        .milestone-card:hover {
+            transform: translateX(8px);
+        }
+
+        .milestone-card.warning { 
+            border-color: var(--warning); 
+        }
+        .milestone-card.danger { 
+            border-color: var(--danger); 
+        }
+        .milestone-card.success { 
+            border-color: var(--success); 
+        }
+
+        .milestone-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .milestone-icon {
+            font-size: 1.5rem;
+        }
+
+        .milestone-date {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .milestone-text {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Enhanced Comparison Section */
+        .comparison-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comparison-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 188, 212, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 3rem;
+            align-items: stretch;
+            margin-top: 2rem;
+        }
+
+        .scenario-panel {
+            background: rgba(1, 22, 39, 0.6);
+            border-radius: 20px;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+        }
+
+        .scenario-panel.no-intervention::before {
+            background: linear-gradient(90deg, var(--danger), rgba(239, 68, 68, 0.7));
+        }
+
+        .scenario-panel.intervention::before {
+            background: linear-gradient(90deg, var(--success), rgba(16, 185, 129, 0.7));
+        }
+
+        .scenario-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .scenario-panel.no-intervention::after {
+            background: radial-gradient(circle at 70% 30%, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+        }
+
+        .scenario-panel.intervention::after {
+            background: radial-gradient(circle at 30% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+        }
+
+        .scenario-panel:hover::after {
+            opacity: 1;
+        }
+
+        .scenario-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .scenario-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .scenario-value {
+            font-size: 4rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+            line-height: 1;
+        }
+
+        .scenario-description {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .vs-divider {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .vs-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(0, 188, 212, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vs-circle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vs-circle:hover::before {
+            opacity: 1;
+        }
+
+        .action-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .action-list li {
+            padding: 0.8rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-list li:hover {
+            color: var(--light);
+            padding-left: 2.2rem;
+        }
+
+        .action-list li::before {
+            content: "\f00c";
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-size: 1.1rem;
+        }
+
+        /* Enhanced Loading and Empty States */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 188, 212, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: rgba(0, 188, 212, 0.5);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--light);
+        }
+
+        /* Enhanced Update Indicator */
+        .update-indicator {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--success), rgba(16, 185, 129, 0.8));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .update-indicator.show {
+            transform: translateX(0);
+        }
+
+        .update-indicator i {
+            animation: spin 2s linear infinite;
+        }
+
+        /* Real-time Data Indicator */
+        .realtime-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--success);
+            margin-left: 1rem;
+        }
+
+        .realtime-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .forecast-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .vs-divider {
+                transform: rotate(90deg);
+                margin: 2rem 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .student-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .scenario-toggle {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .scenario-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .chart-wrapper {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>EduPredict</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="predict.html">Predict</a></li>
+                <li><a href="history.html">History</a></li>
+                <li><a href="pattern_analyzer.html">Patterns</a></li>
+                <li><a href="timeline_forecast.html" class="active">Timeline Forecast</a></li>
+                <li><a href="analytics.html">Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="update-indicator" id="updateIndicator">
+        <i class="fas fa-sync-alt"></i>
+        <span>Data Updated!</span>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Predictive Timeline Simulator</h1>
+            <p class="page-subtitle">Forecast future risk progression and plan interventions strategically</p>
+            <div class="realtime-indicator">Real-time Data</div>
+        </div>
+
+        <div class="controls-section">
+            <h3 class="section-title">
+                <i class="fas fa-users"></i>
+                Select Student
+            </h3>
+            <div class="student-selector" id="studentSelector">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <h3 class="section-title" style="margin-top: 2.5rem;">
+                <i class="fas fa-route"></i>
+                Forecast Scenario
+            </h3>
+            <div class="scenario-toggle">
+                <button class="scenario-btn active" onclick="setScenario('no-action')">
+                    <i class="fas fa-chart-line"></i>
+                    No Intervention
+                </button>
+                <button class="scenario-btn" onclick="setScenario('basic')">
+                    <i class="fas fa-tools"></i>
+                    Basic Support
+                </button>
+                <button class="scenario-btn" onclick="setScenario('intensive')">
+                    <i class="fas fa-rocket"></i>
+                    Intensive Program
+                </button>
+            </div>
+        </div>
+
+        <div class="timeline-container">
+            <h2 class="section-title">
+                <i class="fas fa-chart-area"></i>
+                Risk Progression Timeline
+            </h2>
+            <div class="chart-wrapper">
+                <canvas id="timelineChart"></canvas>
+            </div>
+
+            <h3 class="section-title" style="margin-top: 2rem;">
+                <i class="fas fa-flag-checkered"></i>
+                Key Milestones
+            </h3>
+            <div class="milestones" id="milestones">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>No Student Selected</h3>
+                    <p>Select a student to view their risk progression milestones</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-container">
+            <h2 class="section-title">
+                <i class="fas fa-calendar-alt"></i>
+                Forecasted Risk Levels
+            </h2>
+            <div class="forecast-grid" id="forecastGrid">
+                <div class="empty-state">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>No Student Selected</h3>
+                    <p>Select a student to view their forecasted risk levels</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <h2 class="section-title">
+                <i class="fas fa-balance-scale"></i>
+                Intervention Impact Analysis
+            </h2>
+            <div class="comparison-grid" id="comparisonGrid">
+                <div class="empty-state">
+                    <i class="fas fa-project-diagram"></i>
+                    <h3>No Student Selected</h3>
+                    <p>Select a student to compare intervention scenarios</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let allPredictions = [];
+        let currentStudent = null;
+        let currentScenario = 'no-action';
+        let timelineChart = null;
+        let studentData = {};
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPredictionsFromStorage();
+            initializeStudentSelector();
+            
+            // Listen for storage changes to update in real-time
+            window.addEventListener('storage', function(event) {
+                if (event.key === 'predictions') {
+                    loadPredictionsFromStorage();
+                    initializeStudentSelector();
+                    showUpdateIndicator();
+                }
+            });
+            
+            // Also check for updates every 1 second (for real-time same-tab updates)
+            setInterval(() => {
+                const currentData = localStorage.getItem('predictions');
+                if (currentData !== JSON.stringify(allPredictions.map(p => ({
+                    ...p,
+                    date: p.date.toISOString()
+                })))) {
+                    loadPredictionsFromStorage();
+                    initializeStudentSelector();
+                    showUpdateIndicator();
+                }
+            }, 1000);
+        });
+
+        function loadPredictionsFromStorage() {
+            // Get predictions from localStorage
+            const predictions = JSON.parse(localStorage.getItem('predictions') || '[]');
+            
+            // Convert date strings to Date objects
+            allPredictions = predictions.map(pred => ({
+                ...pred,
+                date: new Date(pred.date)
+            }));
+            
+            // Process student data
+            processStudentData();
+        }
+
+        function processStudentData() {
+            studentData = {};
+            
+            // Group predictions by student ID
+            allPredictions.forEach(pred => {
+                if (!studentData[pred.studentId]) {
+                    studentData[pred.studentId] = {
+                        predictions: [],
+                        latest: null,
+                        currentRisk: 0,
+                        riskLevel: '',
+                        riskScore: 0,
+                        attendance: 0,
+                        gpa: 0
+                    };
+                }
+                
+                studentData[pred.studentId].predictions.push(pred);
+                
+                // Update latest prediction
+                if (!studentData[pred.studentId].latest || 
+                    pred.date > studentData[pred.studentId].latest.date) {
+                    studentData[pred.studentId].latest = pred;
+                    studentData[pred.studentId].currentRisk = pred.dropout_percentage;
+                    studentData[pred.studentId].riskLevel = pred.risk_level;
+                    studentData[pred.studentId].riskScore = pred.risk_score;
+                    
+                    // Extract attendance and GPA from risk factors if available
+                    pred.risk_factors.forEach(factor => {
+                        const lowerFactor = factor.toLowerCase();
+                        if (lowerFactor.includes('attendance') && lowerFactor.includes('%')) {
+                            const match = factor.match(/(\d+)%/);
+                            if (match) {
+                                studentData[pred.studentId].attendance = parseInt(match[1]);
+                            }
+                        }
+                        if (lowerFactor.includes('gpa') && lowerFactor.includes(':')) {
+                            const match = factor.match(/gpa:\s*([\d.]+)/i);
+                            if (match) {
+                                studentData[pred.studentId].gpa = parseFloat(match[1]);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function initializeStudentSelector() {
+            const container = document.getElementById('studentSelector');
+            container.innerHTML = '';
+            
+            if (Object.keys(studentData).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>No Students Available</h3>
+                        <p>Make some predictions first to see students here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            Object.keys(studentData).forEach(studentId => {
+                const student = studentData[studentId];
+                const riskColor = student.riskLevel === 'high' ? 'var(--danger)' : 
+                                 student.riskLevel === 'medium' ? 'var(--warning)' : 'var(--success)';
+                
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.innerHTML = `
+                    <div class="student-id">${studentId}</div>
+                    <div class="student-risk risk-${student.riskLevel}">${student.currentRisk.toFixed(1)}%</div>
+                    <div class="student-meta">
+                        <span>Score: ${student.riskScore}/10</span>
+                        <span class="risk-${student.riskLevel}">${student.riskLevel}</span>
+                    </div>
+                `;
+                
+                card.onclick = () => selectStudent(studentId);
+                container.appendChild(card);
+            });
+            
+            // Select first student by default
+            if (Object.keys(studentData).length > 0 && !currentStudent) {
+                selectStudent(Object.keys(studentData)[0]);
+            }
+        }
+
+        function selectStudent(studentId) {
+            currentStudent = studentId;
+            
+            // Update active card
+            document.querySelectorAll('.student-card').forEach(card => {
+                card.classList.remove('active');
+                if (card.textContent.includes(studentId)) {
+                    card.classList.add('active');
+                }
+            });
+            
+            updateTimeline();
+        }
+
+        function setScenario(scenario) {
+            currentScenario = scenario;
+            
+            // Update active button
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(scenario.replace('-', ' '))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            updateTimeline();
+        }
+
+        function generateForecast(currentRisk, scenario, days) {
+            // More sophisticated forecasting algorithm with real-time factors
+            const baseRate = 0.1; // Base change rate per 30 days
+            
+            if (scenario === 'no-action') {
+                // Without intervention, risk increases over time
+                // The higher the current risk, the faster it increases
+                const acceleration = currentRisk / 100;
+                const change = baseRate * (1 + acceleration) * (days / 30);
+                return Math.min(98, currentRisk + (currentRisk * change));
+            } else if (scenario === 'basic') {
+                // Basic intervention provides moderate improvement
+                const improvementRate = 0.12; // 12% improvement per 30 days
+                const change = improvementRate * (days / 30);
+                return Math.max(15, currentRisk - (currentRisk * change));
+            } else { // intensive
+                // Intensive intervention provides significant improvement
+                const improvementRate = 0.2; // 20% improvement per 30 days
+                const change = improvementRate * (days / 30);
+                return Math.max(5, currentRisk - (currentRisk * change));
+            }
+        }
+
+        function updateTimeline() {
+            if (!currentStudent || !studentData[currentStudent]) return;
+            
+            const student = studentData[currentStudent];
+            const currentRisk = student.currentRisk;
+
+            // Generate timeline data
+            const labels = [];
+            const dataPoints = [];
+            
+            for (let day = 0; day <= 90; day += 5) {
+                labels.push(`Day ${day}`);
+                dataPoints.push(generateForecast(currentRisk, currentScenario, day));
+            }
+
+            // Update chart
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            
+            if (timelineChart) {
+                timelineChart.destroy();
+            }
+
+            const lineColor = currentScenario === 'no-action' ? 'var(--danger)' : 
+                             currentScenario === 'basic' ? 'var(--warning)' : 'var(--success)';
+
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Dropout Risk %',
+                        data: dataPoints,
+                        borderColor: lineColor,
+                        backgroundColor: lineColor + '40',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 4,
+                        pointRadius: 5,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: lineColor,
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { 
+                                color: '#f0f8ff', 
+                                font: { size: 14, weight: '600' },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(4, 42, 66, 0.9)',
+                            titleColor: '#f0f8ff',
+                            bodyColor: '#f0f8ff',
+                            borderColor: 'rgba(0, 188, 212, 0.3)',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Risk: ${context.parsed.y.toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { 
+                                color: '#a0c4e4',
+                                font: { weight: '500' },
+                                callback: (value) => value + '%',
+                                padding: 10
+                            },
+                            grid: { 
+                                color: 'rgba(160, 196, 228, 0.1)',
+                                drawBorder: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Dropout Risk Percentage',
+                                color: '#a0c4e4',
+                                font: { size: 14, weight: '600' },
+                                padding: { top: 10, bottom: 0 }
+                            }
+                        },
+                        x: {
+                            ticks: { 
+                                color: '#a0c4e4',
+                                font: { weight: '500' },
+                                padding: 10,
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: { 
+                                color: 'rgba(160, 196, 228, 0.1)',
+                                drawBorder: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Timeline (Days)',
+                                color: '#a0c4e4',
+                                font: { size: 14, weight: '600' },
+                                padding: { top: 10, bottom: 0 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Update milestones
+            updateMilestones(currentRisk);
+            
+            // Update forecasts
+            updateForecasts(currentRisk);
+            
+            // Update comparison
+            updateComparison(currentRisk);
+        }
+
+        function updateMilestones(currentRisk) {
+            const container = document.getElementById('milestones');
+            const milestones = [];
+
+            if (currentScenario === 'no-action') {
+                const day15Risk = generateForecast(currentRisk, 'no-action', 15);
+                const day45Risk = generateForecast(currentRisk, 'no-action', 45);
+                const day90Risk = generateForecast(currentRisk, 'no-action', 90);
+                
+                milestones.push({
+                    type: 'warning',
+                    icon: 'fa-exclamation-triangle',
+                    date: 'Day 15',
+                    text: `Risk increases to ${day15Risk.toFixed(1)}%. Early warning signs becoming evident.`
+                });
+                
+                if (day45Risk > 70) {
+                    milestones.push({
+                        type: 'danger',
+                        icon: 'fa-times-circle',
+                        date: 'Day 45',
+                        text: `Critical threshold reached at ${day45Risk.toFixed(1)}%. Immediate intervention required.`
+                    });
+                }
+                
+                milestones.push({
+                    type: 'danger',
+                    icon: 'fa-ban',
+                    date: 'Day 90',
+                    text: `Risk peaks at ${day90Risk.toFixed(1)}%. High probability of dropout without action.`
+                });
+            } else {
+                const day14Risk = generateForecast(currentRisk, currentScenario, 14);
+                const day30Risk = generateForecast(currentRisk, currentScenario, 30);
+                const day90Risk = generateForecast(currentRisk, currentScenario, 90);
+                
+                milestones.push({
+                    type: 'success',
+                    icon: 'fa-play-circle',
+                    date: 'Day 14',
+                    text: 'Intervention begins. Initial assessment and support plan implementation.'
+                });
+                
+                milestones.push({
+                    type: 'success',
+                    icon: 'fa-chart-line',
+                    date: 'Day 30',
+                    text: `Risk decreases to ${day30Risk.toFixed(1)}%. Early positive indicators observed.`
+                });
+                
+                milestones.push({
+                    type: 'success',
+                    icon: 'fa-check-circle',
+                    date: 'Day 90',
+                    text: `Risk stabilizes at ${day90Risk.toFixed(1)}%. Sustained improvement achieved.`
+                });
+            }
+
+            container.innerHTML = milestones.map(m => `
+                <div class="milestone-card ${m.type}">
+                    <div class="milestone-header">
+                        <i class="milestone-icon fas ${m.icon}"></i>
+                        <div class="milestone-date" style="color: ${
+                            m.type === 'danger' ? 'var(--danger)' : 
+                            m.type === 'warning' ? 'var(--warning)' : 'var(--success)'
+                        };">
+                            ${m.date}
+                        </div>
+                    </div>
+                    <div class="milestone-text">${m.text}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateForecasts(currentRisk) {
+            const container = document.getElementById('forecastGrid');
+            const forecasts = [
+                { 
+                    period: '30 Days', 
+                    days: 30, 
+                    icon: 'fa-calendar-day'
+                },
+                { 
+                    period: '60 Days', 
+                    days: 60, 
+                    icon: 'fa-calendar-week'
+                },
+                { 
+                    period: '90 Days', 
+                    days: 90, 
+                    icon: 'fa-calendar-alt'
+                }
+            ];
+
+            container.innerHTML = forecasts.map(f => {
+                const value = generateForecast(currentRisk, currentScenario, f.days);
+                const change = value - currentRisk;
+                const color = value >= 70 ? 'var(--danger)' : 
+                             value >= 40 ? 'var(--warning)' : 'var(--success)';
+
+                return `
+                    <div class="forecast-card">
+                        <div class="forecast-icon">
+                            <i class="fas ${f.icon}"></i>
+                        </div>
+                        <div class="forecast-period">${f.period}</div>
+                        <div class="forecast-value" style="color: ${color};">
+                            ${value.toFixed(1)}%
+                        </div>
+                        <div class="forecast-change ${change < 0 ? 'change-positive' : 'change-negative'}">
+                            <i class="fas fa-arrow-${change < 0 ? 'down' : 'up'}"></i>
+                            ${Math.abs(change).toFixed(1)}%
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateComparison(currentRisk) {
+            const container = document.getElementById('comparisonGrid');
+            const noAction = generateForecast(currentRisk, 'no-action', 90);
+            const withAction = generateForecast(currentRisk, 'intensive', 90);
+            const improvement = noAction - withAction;
+            const improvementPercent = (improvement / noAction * 100).toFixed(0);
+
+            container.innerHTML = `
+                <div class="scenario-panel no-intervention">
+                    <div class="scenario-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Without Intervention
+                    </div>
+                    <div class="scenario-value" style="color: var(--danger);">
+                        ${noAction.toFixed(1)}%
+                    </div>
+                    <div class="scenario-description">
+                        Risk continues to escalate over time. 
+                        ${noAction > 70 ? 'Critical threshold will be reached by day 45.' : 'Student remains at elevated risk.'}
+                    </div>
+                </div>
+
+                <div class="vs-divider">
+                    <div class="vs-circle">VS</div>
+                </div>
+
+                <div class="scenario-panel intervention">
+                    <div class="scenario-title">
+                        <i class="fas fa-hands-helping"></i>
+                        With Intervention
+                    </div>
+                    <div class="scenario-value" style="color: var(--success);">
+                        ${withAction.toFixed(1)}%
+                    </div>
+                    <div class="scenario-description">
+                        Risk reduced by <strong style="color: var(--success);">${improvement.toFixed(1)}%</strong> (${improvementPercent}% improvement)
+                    </div>
+                    <ul class="action-list">
+                        <li>Daily attendance monitoring</li>
+                        <li>Academic tutoring 3x/week</li>
+                        <li>Parent engagement program</li>
+                        <li>Behavioral support counseling</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function showUpdateIndicator() {
+            const indicator = document.getElementById('updateIndicator');
+            indicator.classList.add('show');
+            
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

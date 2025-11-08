@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPredict: Pattern Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1929 0%, #001e3c 100%);
+            color: #f0f8ff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: #00bcd4;
+            top: -200px;
+            right: -200px;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: #0097a7;
+            bottom: -150px;
+            left: -150px;
+        }
+
+        nav {
+            background: rgba(4, 42, 66, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid rgba(0, 188, 212, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #f0f8ff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #00bcd4;
+        }
+
+        .pattern-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pattern-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid rgba(0, 188, 212, 0.3);
+        }
+
+        .pattern-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4ff6ff, #f0f8ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .pattern-subtitle {
+            color: #a0c4e4;
+            font-size: 1.1rem;
+        }
+
+        .chart-section {
+            background: rgba(4, 42, 66, 0.9);
+            border: 2px solid rgba(0, 188, 212, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4ff6ff;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 2rem;
+        }
+
+        .insight-card {
+            background: rgba(1, 22, 39, 0.6);
+            border-left: 4px solid #00bcd4;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #4ff6ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-text {
+            color: #a0c4e4;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #a0c4e4;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span>🎓</span>
+                <span>EduPredict</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="predict.html">Predict Student</a></li>
+                <li><a href="history.html">History</a></li>
+                <li><a href="pattern_analyzer.html" class="active">Patterns</a></li>
+                <li><a href="analytics.html">Analytics</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="pattern-container">
+        <div class="pattern-header">
+            <h1 class="pattern-title">🔍 Dropout Pattern Analyzer</h1>
+            <p class="pattern-subtitle">Simple charts showing student dropout patterns</p>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="section-title">📊 Risk Level Distribution (Pie Chart)</h2>
+            <div class="chart-container">
+                <canvas id="riskLevelChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="section-title">📊 Student Dropout Risk (Bar Chart)</h2>
+            <div class="chart-container">
+                <canvas id="studentBarChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="section-title">💡 What We Found</h2>
+            <div id="insights-container">
+                <div class="insight-card">
+                    <div class="insight-title">Risk Distribution</div>
+                    <div class="insight-text" id="risk-insight">Loading...</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">Student Performance</div>
+                    <div class="insight-text" id="student-insight">Loading...</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-title">Main Issues</div>
+                    <div class="insight-text" id="issues-insight">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allPredictions = [];
+        let riskLevelChart = null;
+        let studentBarChart = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPredictionsFromStorage();
+            createCharts();
+            
+            // Update when data changes
+            window.addEventListener('storage', function(event) {
+                if (event.key === 'predictions') {
+                    loadPredictionsFromStorage();
+                    updateCharts();
+                    updateInsights();
+                }
+            });
+        });
+
+        function loadPredictionsFromStorage() {
+            // Get predictions from localStorage
+            const predictions = JSON.parse(localStorage.getItem('predictions') || '[]');
+            
+            // Convert date strings to Date objects
+            allPredictions = predictions.map(pred => ({
+                ...pred,
+                date: new Date(pred.date)
+            }));
+        }
+
+        function createCharts() {
+            // Create Risk Level Pie Chart
+            const riskLevelCtx = document.getElementById('riskLevelChart').getContext('2d');
+            
+            // Count risk levels
+            const highRiskCount = allPredictions.filter(p => p.risk_level === 'high').length;
+            const mediumRiskCount = allPredictions.filter(p => p.risk_level === 'medium').length;
+            const lowRiskCount = allPredictions.filter(p => p.risk_level === 'low').length;
+            
+            riskLevelChart = new Chart(riskLevelCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                    datasets: [{
+                        data: [highRiskCount, mediumRiskCount, lowRiskCount],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#f0f8ff',
+                                font: {
+                                    size: 14
+                                },
+                                padding: 20
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'How Many Students in Each Risk Group',
+                            color: '#4ff6ff',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Create Student Bar Chart
+            const studentBarCtx = document.getElementById('studentBarChart').getContext('2d');
+            
+            // Get unique students and their latest risk
+            const studentData = {};
+            allPredictions.forEach(pred => {
+                if (!studentData[pred.studentId] || pred.date > studentData[pred.studentId].date) {
+                    studentData[pred.studentId] = pred;
+                }
+            });
+            
+            const studentIds = Object.keys(studentData);
+            const studentRisks = studentIds.map(id => studentData[id].dropout_percentage);
+            const studentColors = studentIds.map(id => {
+                const risk = studentData[id].risk_level;
+                return risk === 'high' ? 'rgba(239, 68, 68, 0.8)' : 
+                       risk === 'medium' ? 'rgba(245, 158, 11, 0.8)' : 'rgba(16, 185, 129, 0.8)';
+            });
+            
+            studentBarChart = new Chart(studentBarCtx, {
+                type: 'bar',
+                data: {
+                    labels: studentIds,
+                    datasets: [{
+                        label: 'Dropout Risk %',
+                        data: studentRisks,
+                        backgroundColor: studentColors,
+                        borderColor: studentColors.map(color => color.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Dropout Risk for Each Student',
+                            color: '#4ff6ff',
+                            font: {
+                                size: 18,
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Risk: ' + context.parsed.y.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#a0c4e4',
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(160, 196, 228, 0.1)'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Dropout Risk Percentage',
+                                color: '#a0c4e4',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#a0c4e4'
+                            },
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'Student ID',
+                                color: '#a0c4e4',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updateInsights();
+        }
+
+        function updateCharts() {
+            // Update Risk Level Chart
+            const highRiskCount = allPredictions.filter(p => p.risk_level === 'high').length;
+            const mediumRiskCount = allPredictions.filter(p => p.risk_level === 'medium').length;
+            const lowRiskCount = allPredictions.filter(p => p.risk_level === 'low').length;
+            
+            riskLevelChart.data.datasets[0].data = [highRiskCount, mediumRiskCount, lowRiskCount];
+            riskLevelChart.update();
+
+            // Update Student Bar Chart
+            const studentData = {};
+            allPredictions.forEach(pred => {
+                if (!studentData[pred.studentId] || pred.date > studentData[pred.studentId].date) {
+                    studentData[pred.studentId] = pred;
+                }
+            });
+            
+            const studentIds = Object.keys(studentData);
+            const studentRisks = studentIds.map(id => studentData[id].dropout_percentage);
+            const studentColors = studentIds.map(id => {
+                const risk = studentData[id].risk_level;
+                return risk === 'high' ? 'rgba(239, 68, 68, 0.8)' : 
+                       risk === 'medium' ? 'rgba(245, 158, 11, 0.8)' : 'rgba(16, 185, 129, 0.8)';
+            });
+            
+            studentBarChart.data.labels = studentIds;
+            studentBarChart.data.datasets[0].data = studentRisks;
+            studentBarChart.data.datasets[0].backgroundColor = studentColors;
+            studentBarChart.data.datasets[0].borderColor = studentColors.map(color => color.replace('0.8', '1'));
+            studentBarChart.update();
+        }
+
+        function updateInsights() {
+            if (allPredictions.length === 0) {
+                document.getElementById('risk-insight').textContent = "No student data available. Please make some predictions first.";
+                document.getElementById('student-insight').textContent = "No student data available. Please make some predictions first.";
+                document.getElementById('issues-insight').textContent = "No student data available. Please make some predictions first.";
+                return;
+            }
+
+            // Risk Distribution Insight
+            const total = allPredictions.length;
+            const highRisk = allPredictions.filter(p => p.risk_level === 'high').length;
+            const mediumRisk = allPredictions.filter(p => p.risk_level === 'medium').length;
+            const lowRisk = allPredictions.filter(p => p.risk_level === 'low').length;
+            
+            const highRiskPercent = total > 0 ? (highRisk / total * 100).toFixed(1) : 0;
+            const mediumRiskPercent = total > 0 ? (mediumRisk / total * 100).toFixed(1) : 0;
+            const lowRiskPercent = total > 0 ? (lowRisk / total * 100).toFixed(1) : 0;
+            
+            document.getElementById('risk-insight').textContent = 
+                `${highRiskPercent}% of students are at high risk, ${mediumRiskPercent}% at medium risk, and ${lowRiskPercent}% at low risk.`;
+            
+            // Student Performance Insight
+            const avgRisk = allPredictions.reduce((sum, pred) => sum + pred.dropout_percentage, 0) / allPredictions.length;
+            
+            if (avgRisk > 70) {
+                document.getElementById('student-insight').textContent = 
+                    "Students are at very high risk of dropping out. Immediate action is needed.";
+            } else if (avgRisk > 40) {
+                document.getElementById('student-insight').textContent = 
+                    "Students are at moderate risk of dropping out. Support programs should be implemented.";
+            } else {
+                document.getElementById('student-insight').textContent = 
+                    "Students are at relatively low risk of dropping out. Continue monitoring their progress.";
+            }
+            
+            // Main Issues Insight
+            const factorCounts = {};
+            allPredictions.forEach(pred => {
+                pred.risk_factors.forEach(factor => {
+                    factorCounts[factor] = (factorCounts[factor] || 0) + 1;
+                });
+            });
+            
+            const sortedFactors = Object.entries(factorCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3);
+            
+            if (sortedFactors.length > 0) {
+                document.getElementById('issues-insight').textContent = 
+                    `The most common issues are: ${sortedFactors.map(f => f[0]).join(', ')}. These should be addressed first.`;
+            } else {
+                document.getElementById('issues-insight').textContent = "No specific issues have been identified yet.";
+            }
+        }
+    </script>
+</body>
+</html>
